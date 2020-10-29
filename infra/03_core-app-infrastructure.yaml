@@ -172,6 +172,77 @@ Resources:
         Fn::GetAtt: 
           - "ScheduledRule"
           - "Arn"
+
+  MovieRecommend:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        S3Bucket:
+          Fn::ImportValue: !Sub ${EnvironmentName}:coreinf-functionbucket
+        S3Key: 'MovieRecommend.zip'
+      Description: 'Function to perform movie recommendations'
+      FunctionName: 'MovieDataRecommend'
+      Handler: 'recommend_movies.event_handler'
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt MovieRecommendLambdaExecutionRole.Arn
+      Runtime: 'python3.6'
+      Timeout: 240
+      TracingConfig:
+        Mode: Active
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: !Sub ${EnvironmentName}:NoIngressSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet1
+          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet2
+      Environment:
+        Variables:
+          LOGGER_LEVEL: INFO
+          TABLE_NAME:  !Ref DDBTable
+  MovieRecommendLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action:
+            - dynamodb:Scan
+            - dynamodb:Query
+            Resource: !GetAtt DDBTable.Arn
+          - Effect: Allow
+            Action:
+            - ec2:DescribeNetworkInterfaces
+            - ec2:CreateNetworkInterface
+            - ec2:DeleteNetworkInterface
+            - ec2:DescribeInstances
+            - ec2:AttachNetworkInterface
+            Resource: '*'
+          - Effect: Allow
+            Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+            Resource: '*'
+
+
+
 Outputs:
   MovieDataLoadFunction:
     Description: Lambda function that loads the Movie data into DynamoDB
