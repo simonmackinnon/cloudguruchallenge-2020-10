@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "My API Gateway and Lambda function"
+
+Parameters:
+  ApiStageName:
+    Type: "String"
+    AllowedPattern: "^[a-z0-9]+$"
+    Default: "live"
+  EnvironmentName:
+    Type: String
+    Default: MovieDataLoader
+
+Resources:
+  MovieRecommenderApi:
+    Type: "AWS::apiGateway::RestApi"
+    Properties:
+      Name: "movie-recommend-api"
+      Description: "Movie Recommend API"
+
+  MovieRecommenderApiRootMethod:
+    Type: "AWS::apiGateway::Method"
+    Properties:
+      AuthorizationType: "NONE"
+      HttpMethod: "GET"
+      Integration:
+        IntegrationHttpMethod: "GET"
+        Type: "AWS_PROXY"
+        Uri: !Sub
+          - "arn:aws:MovieRecommenderApi:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
+          - lambdaArn: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+      ResourceId: !GetAtt "MovieRecommenderApi.RootResourceId"
+      RestApiId: !Ref "MovieRecommenderApi"
+
+  MovieRecommenderApiDeployment:
+    Type: "AWS::apiGateway::Deployment"
+    DependsOn:
+      - "MovieRecommenderApiRootMethod"
+    Properties:
+      RestApiId: !Ref "MovieRecommenderApi"
+      StageName: !Ref "ApiStageName"
+
+  MovieRecommenderApiInvoke:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+      Principal: "MovieRecommenderApi.amazonaws.com"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${MovieRecommenderApi}/*/GET/"
+      
+    MovieRecommenderApiIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'MovieRecommenderApi.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+
+Outputs:
+  MovieRecommenderApiInvokeURL:
+    Value: !Sub "https://${MovieRecommenderApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiStageName}"
