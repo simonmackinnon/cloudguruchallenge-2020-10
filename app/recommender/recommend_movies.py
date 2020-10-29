@@ -1,4 +1,3 @@
-import argparse
 import boto3
 import logging
 import os
@@ -16,99 +15,72 @@ def setupLogger(loggerLevel):
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=loggerLevel,
         datefmt='%d-%m-%Y %H:%M:%S')
+
+def tableIsEmpty(response):
+    return response['Count'] == 0
+
+def getTitles(response):
+    if not tableIsEmpty(response):
+        items = response['Items']
+        items.sort(key=lambda x: x['titleid'], reverse=True)
+        return items
     
-def getMoviesFile(bucket_name):
-    if not os.path.exists('/tmp/download'):
-        logger.info('Making dir: /tmp/download/')
-        os.makedirs('/tmp/download/')
-    
-    filename = "titles/clustered_titles.csv"
-    boto3.resource('s3').Bucket(bucket_name).download_file(filename, '/tmp/download/clustered_titles.csv')
+    return None
 
-    return '/tmp/download/clustered_titles.csv'
+def getTableScanResponse(table_name, dynamodb_resource):
+    table = dynamodb_resource.Table(table_name)
+    response = table.scan()
+    return response
 
-def getMoviesDataFrame(filename):
-    df_titles = pd.read_csv('clustered_titles.csv')
-    df_titles.rename(columns={"Unnamed: 0": "title"}, inplace=True)
-    return df_titles
+def searchForTitles(df_titles, searchString):
+    logger.info("Searching for {}".format(searchString))
+    movies = df_titles[df_titles['title'].str.contains(searchString)]
+    return movies
 
-def truncateTable(tableName):
-    dynamodb_resource = boto3.resource('dynamodb', region_name='ap-southeast-2')
+def recommendTitlesForTitleId(df_titles, reftitle):
+    logger.info("Recommending for {}".format(reftitle))
+    label = df_titles[df_titles['titleid'] == reftitle]['label'].iloc[0]
+    movies = df_titles[df_titles['label'] == label].sample(15)
+    return movies
 
-    table = dynamodb_resource.Table(tableName)
-    
-    #get the table keys
-    tableKeyNames = [key.get("AttributeName") for key in table.key_schema]
-
-    #Only retrieve the keys for each item in the table (minimize data transfer)
-    projectionExpression = ", ".join('#' + key for key in tableKeyNames)
-    expressionAttrNames = {'#'+key: key for key in tableKeyNames}
-    
-    counter = 0
-    page = table.scan(ProjectionExpression=projectionExpression, ExpressionAttributeNames=expressionAttrNames)
-    with table.batch_writer() as batch:
-        while page["Count"] > 0:
-            counter += page["Count"]
-            # Delete items in batches
-            for itemKeys in page["Items"]:
-                batch.delete_item(Key=itemKeys)
-            # Fetch the next page
-            if 'LastEvaluatedKey' in page:
-                page = table.scan(
-                    ProjectionExpression=projectionExpression, ExpressionAttributeNames=expressionAttrNames,
-                    ExclusiveStartKey=page['LastEvaluatedKey'])
-            else:
-                break
-    logger.info("Deleted {}".format(counter))
-
-def loadDataIntoTable(df_titles, tableName):
-    
-    dynamodb_resource = boto3.resource('dynamodb', region_name='ap-southeast-2')
-
-    table = dynamodb_resource.Table(tableName)
-    
-    for index, row, in df_titles.iterrows(): 
-        try:
-            logger.info("putting record " + index + ": " + row['titleid'])
-            table.put_item(
-                Item={
-                    'titleid': row['titleid'].split(' ')[0],
-                    'title': " ".join(row['titleid'].split()[1:]),
-                    'label': row['labels']
-                }
-            )
-        except ClientError as e:
-            # Ignore the ConditionalCheckFailedException, bubble up
-            # other exceptions.
-            if e.response['Error']['Code'] != 'ConditionalCheckFailedException':
-                raise
-
-
-def main(args):
-    bucketName = args['bucketName']
+def main(args, event):
     tableName = args['tableName']
     loggerLevel = logging.__dict__[args['loggerLevel']]
     
+    dynamodb_resource = boto3.resource('dynamodb', region_name='ap-southeast-2')
+    
+    return_titles = None
+
     try: 
         setupLogger(loggerLevel)
         logger.info('Starting...')
-        filename = getMoviesFile(bucketName)
-        df_titles = getMoviesDataFrame(filename)
-        truncateTable(tableName)
-        loadDataIntoTable(df_titles, tableName)
+
+        response = getTableScanResponse(tableName, dynamodb_resource)
+        df_titles = getTitles(response)
+
+        if event.body.querytype == 'search':
+            return_titles = searchForTitles(df_titles, event.body.search)
+        elif event.body.querytype == 'recommend':
+            return_titles = recommendTitlesForTitleId(df_titles, event.body.reftitle)
+        else:
+            logger.error('Invalid query type!')
+
         logger.info('Done!')
     except:
         logger.exception('Error in processing!')
     finally:
         logger.info('Finally Done!')
+
+    return { 
+        'titles' : return_titles.to_json(orient="index")
+    }
  
 def event_handler(event, context):
     args = dict()
     args['loggerLevel'] = os.environ['LOGGER_LEVEL']
-    args['bucketName'] = os.environ['BUCKET_NAME']
     args['tableName'] = os.environ['TABLE_NAME']
     
     logger.info('Args: {}'.format(args))
     
-    main(args)      
+    return main(args, event)
 
