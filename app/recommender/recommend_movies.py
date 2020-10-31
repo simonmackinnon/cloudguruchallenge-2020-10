@@ -2,6 +2,7 @@ import boto3
 import logging
 import os
 import pandas as pd
+import json
 
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
@@ -23,9 +24,10 @@ def getTitles(response):
     if not tableIsEmpty(response):
         items = response['Items']
         items.sort(key=lambda x: x['titleid'], reverse=True)
-        return items
+        df_itmes = pd.DataFrame(items)
+        return df_itmes
     
-    return None
+    return pd.DataFrame()
 
 def getTableScanResponse(table_name, dynamodb_resource):
     table = dynamodb_resource.Table(table_name)
@@ -46,24 +48,23 @@ def recommendTitlesForTitleId(df_titles, reftitle):
 def main(args, event):
     tableName = args['tableName']
     loggerLevel = logging.__dict__[args['loggerLevel']]
-    
     dynamodb_resource = boto3.resource('dynamodb', region_name='ap-southeast-2')
-    
-    return_titles = None
+    return_titles = pd.DataFrame()
 
     try: 
         setupLogger(loggerLevel)
         logger.info('Starting...')
-
+        logger.info('Event: {}'.format(event))
         response = getTableScanResponse(tableName, dynamodb_resource)
         df_titles = getTitles(response)
 
-        if event.body.querytype == 'search':
-            return_titles = searchForTitles(df_titles, event.body.search)
-        elif event.body.querytype == 'recommend':
-            return_titles = recommendTitlesForTitleId(df_titles, event.body.reftitle)
-        else:
-            logger.error('Invalid query type!')
+        if "body" in event and "querytype" in event["body"]:
+            if event["body"]["querytype"] == 'search':
+                return_titles = searchForTitles(df_titles, event["body"]["search"])
+            elif event["body"]["querytype"] == 'recommend':
+                return_titles = recommendTitlesForTitleId(df_titles, event["body"]["reftitle"])
+            else:
+                logger.error('Invalid query type!')
 
         logger.info('Done!')
     except:

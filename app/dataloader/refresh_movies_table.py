@@ -28,7 +28,7 @@ def getMoviesFile(bucket_name):
     return '/tmp/download/clustered_titles.csv'
 
 def getMoviesDataFrame(filename):
-    df_titles = pd.read_csv('clustered_titles.csv')
+    df_titles = pd.read_csv(filename)
     df_titles.rename(columns={"Unnamed: 0": "title"}, inplace=True)
     return df_titles
 
@@ -69,11 +69,11 @@ def loadDataIntoTable(df_titles, tableName):
     
     for index, row, in df_titles.iterrows(): 
         try:
-            logger.info("putting record " + index + ": " + row['titleid'])
+            logger.info("putting record {}".format(row['title']))
             table.put_item(
                 Item={
-                    'titleid': row['titleid'].split(' ')[0],
-                    'title': " ".join(row['titleid'].split()[1:]),
+                    'titleid': row['title'].split(' ')[0],
+                    'title': " ".join(row['title'].split()[1:]),
                     'label': row['labels']
                 }
             )

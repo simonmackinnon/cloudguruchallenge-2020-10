@@ -12,7 +12,7 @@ Resources:
           AttributeType: "S"
         -
           AttributeName: "label"
-          AttributeType: "S"
+          AttributeType: "N"
       KeySchema:
         -
           AttributeName: "label"
@@ -93,7 +93,7 @@ Resources:
       ReservedConcurrentExecutions: 1
       Role: !GetAtt MovieDataLoadLambdaExecutionRole.Arn
       Runtime: 'python3.6'
-      Timeout: 240
+      Timeout: 900
       TracingConfig:
         Mode: Active
       VpcConfig:
@@ -134,7 +134,16 @@ Resources:
             Action:
             - dynamodb:PutItem
             - dynamodb:DescribeTable
+            - dynamodb:Scan
+            - dynamodb:BatchWriteItem
             Resource: !GetAtt DDBTable.Arn
+          - Effect: Allow
+            Action:
+            - s3:Get*
+            Resource: !Join
+              - ''
+              - - Fn::ImportValue: !Sub ${EnvironmentName}:MovieBucketArn
+                - "/*"
           - Effect: Allow
             Action:
             - ec2:DescribeNetworkInterfaces
@@ -249,11 +258,16 @@ Outputs:
     Value: !Ref MovieDataLoadFunction
     Export: 
       Name: !Sub ${EnvironmentName}:MovieDataLoadFunction
-  MovieRecommendFunctionArn:
-    Description: Lambda function that recommends movies based on input 
-    Value: !GetAtt MovieRecommendFunction.Arn
+  MovieRecommendFunction:
+    Description: Lambda function that recommends movies based on input
+    Value: !Ref  MovieRecommendFunction
     Export: 
       Name: !Sub ${EnvironmentName}:MovieRecommendFunction
+  MovieRecommendFunctionArn:
+    Description: ARN of Lambda function that recommends movies based on input 
+    Value: !GetAtt MovieRecommendFunction.Arn
+    Export: 
+      Name: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
   DDBTable:
     Description: DynamoDB table with Movie data in it
     Value: !Ref DDBTable

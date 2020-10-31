@@ -16,3 +16,8 @@ Outputs:
       Description: S3 Bucket for storing function package(s)
       Export: 
         Name: !Sub ${EnvironmentName}:coreinf-functionbucket
+    BucketArn:
+      Description: Arn of thje movie bucket
+      Value: !GetAtt S3Bucket.Arn
+      Export: 
+        Name: !Sub ${EnvironmentName}:MovieBucketArn

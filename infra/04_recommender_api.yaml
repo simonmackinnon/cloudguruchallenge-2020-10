@@ -47,7 +47,7 @@ Resources:
       Principal: "MovieRecommenderApi.amazonaws.com"
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${MovieRecommenderApi}/*/GET/"
       
-    MovieRecommenderApiIamRole:
+  MovieRecommenderApiIamRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
