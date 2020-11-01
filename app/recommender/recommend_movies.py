@@ -58,11 +58,11 @@ def main(args, event):
         response = getTableScanResponse(tableName, dynamodb_resource)
         df_titles = getTitles(response)
 
-        if "body" in event and "querytype" in event["body"]:
-            if event["body"]["querytype"] == 'search':
-                return_titles = searchForTitles(df_titles, event["body"]["search"])
-            elif event["body"]["querytype"] == 'recommend':
-                return_titles = recommendTitlesForTitleId(df_titles, event["body"]["reftitle"])
+        if "queryStringParameters" in event and event["queryStringParameters"]:
+            if "search" in event["queryStringParameters"] and event["queryStringParameters"]["search"]:
+                return_titles = searchForTitles(df_titles, event["queryStringParameters"]["search"])
+            elif "recommendfortitle" in event["queryStringParameters"] and event["queryStringParameters"]["recommendfortitle"]:
+                return_titles = recommendTitlesForTitleId(df_titles, event["queryStringParameters"]["recommendfortitle"])
             else:
                 logger.error('Invalid query type!')
 
@@ -73,7 +73,9 @@ def main(args, event):
         logger.info('Finally Done!')
 
     return { 
-        'titles' : return_titles.to_json(orient="index")
+        'statusCode': 200,
+        'body': json.dumps({'titles' : return_titles.to_json(orient="index")}),
+        'isBase64Encoded': False
     }
  
 def event_handler(event, context):

@@ -12,27 +12,29 @@ Parameters:
 
 Resources:
   MovieRecommenderApi:
-    Type: "AWS::apiGateway::RestApi"
+    Type: "AWS::ApiGateway::RestApi"
     Properties:
       Name: "movie-recommend-api"
       Description: "Movie Recommend API"
 
   MovieRecommenderApiRootMethod:
-    Type: "AWS::apiGateway::Method"
+    Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: "NONE"
       HttpMethod: "GET"
       Integration:
-        IntegrationHttpMethod: "GET"
+        IntegrationHttpMethod: "POST"
         Type: "AWS_PROXY"
-        Uri: !Sub
-          - "arn:aws:MovieRecommenderApi:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
-          - lambdaArn: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+        Uri: !Join
+              - ''
+              - - !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/"
+                - Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+                - "/invocations"
       ResourceId: !GetAtt "MovieRecommenderApi.RootResourceId"
       RestApiId: !Ref "MovieRecommenderApi"
 
   MovieRecommenderApiDeployment:
-    Type: "AWS::apiGateway::Deployment"
+    Type: "AWS::ApiGateway::Deployment"
     DependsOn:
       - "MovieRecommenderApiRootMethod"
     Properties:
@@ -43,8 +45,9 @@ Resources:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
-      Principal: "MovieRecommenderApi.amazonaws.com"
+      FunctionName: 
+        Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+      Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${MovieRecommenderApi}/*/GET/"
       
   MovieRecommenderApiIamRole:
@@ -57,7 +60,7 @@ Resources:
             Effect: 'Allow'
             Principal:
               Service:
-                - 'MovieRecommenderApi.amazonaws.com'
+                - 'apigateway.amazonaws.com'
             Action:
               - 'sts:AssumeRole'
       Path: '/'
@@ -68,7 +71,8 @@ Resources:
             Statement:
               - Effect: 'Allow'
                 Action: 'lambda:*'
-                Resource: Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+                Resource: 
+                  Fn::ImportValue: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
 
 Outputs:
   MovieRecommenderApiInvokeURL:
