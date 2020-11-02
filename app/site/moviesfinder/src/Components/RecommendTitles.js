@@ -37,7 +37,7 @@ class RecommendTitles extends Component {
     .then(results => {return results.json();})
     .then(data => {
       this.setState({ 
-        foundTitles: JSON.parse(data.titles).slice(0, 9), 
+        foundTitles: JSON.parse(data.titles).slice(0, 20), 
         selectedTitleId: "",
         recommendedTitles: []
       });
