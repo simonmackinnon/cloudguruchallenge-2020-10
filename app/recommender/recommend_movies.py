@@ -36,7 +36,7 @@ def getTableScanResponse(table_name, dynamodb_resource):
 
 def searchForTitles(df_titles, searchString):
     logger.info("Searching for {}".format(searchString))
-    movies = df_titles[df_titles['title'].str.contains(searchString)]
+    movies = df_titles[df_titles['title'].str.contains(searchString, case=False)]
     return movies
 
 def recommendTitlesForTitleId(df_titles, reftitle):
@@ -74,7 +74,12 @@ def main(args, event):
 
     return { 
         'statusCode': 200,
-        'body': json.dumps({'titles' : return_titles.to_json(orient="index")}),
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps({'titles' : return_titles.to_json(orient="records")}),
         'isBase64Encoded': False
     }
  
