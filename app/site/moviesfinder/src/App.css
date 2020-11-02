@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.App-Button-Default {
+  background: lightgrey;
+}
+
+.App-Button-Active {
+  background: yellowgreen;
+}
+
+.nothidden {
+  visibility: visible;
+}
+
+.hidden {
+  visibility: hidden;
+}

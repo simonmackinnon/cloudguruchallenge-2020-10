@@ -1,25 +1,30 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import ReactGA from 'react-ga';
 import './App.css';
+import RecommendTitles from './Components/RecommendTitles';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+
+  handler(e) {
+    e.preventDefault()
+  }
+
+  constructor(props){
+    super(props);
+
+    ReactGA.initialize('dsafdsf');
+    ReactGA.pageview(window.location.pathname);
+    this.handler = this.handler.bind(this)
+  }
+
+
+  render() {
+    return (
+      <div className="App">
+        <RecommendTitles/>
+      </div>
+    );
+  }
 }
 
 export default App;
