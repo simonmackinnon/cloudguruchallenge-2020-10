@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactGA from 'react-ga';
 import './App.css';
 import RecommendTitles from './Components/RecommendTitles';
+import Footer from './Components/Footer';
 
 class App extends Component {
 
@@ -21,7 +22,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <div className="content">
         <RecommendTitles/>
+        </div>
+        <div className="footer">
+        <Footer/>
+        </div>
       </div>
     );
   }

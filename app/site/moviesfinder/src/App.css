@@ -39,10 +39,12 @@
 
 .App-Button-Default {
   background: lightgrey;
+  width: 100%
 }
 
 .App-Button-Active {
   background: yellowgreen;
+  width: 100%
 }
 
 .nothidden {
@@ -51,4 +53,24 @@
 
 .hidden {
   visibility: hidden;
+}
+
+.container {
+  columns: 3 auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+}
+
+.content {
+  min-height: calc(100vh - 70px);
+}
+.footer {
+  height: 50px;
+}
+
+.banner {
+  width: 70%;
+  max-width: 450px;
 }

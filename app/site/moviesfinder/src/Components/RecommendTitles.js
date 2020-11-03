@@ -89,7 +89,9 @@ class RecommendTitles extends Component {
   render() {
     
     let titleSelectHandler = this.handleTitleSelect
+    let foundTitles = this.state.foundTitles
     let selectedTitleId = this.state.selectedTitleId
+    let recommendedTitles = this.state.recommendedTitles
 
      let titlesElems = this.state.foundTitles.map(
        function(element, i){
@@ -102,6 +104,7 @@ class RecommendTitles extends Component {
               id={titleId} 
               type="button" 
               value={title} 
+              title={title}
               onClick={titleSelectHandler}
             />
             <br />
@@ -127,7 +130,13 @@ class RecommendTitles extends Component {
     
     return (
       <div id="recommend-titles">
-          <h1>MoviesForMe.xyz</h1>
+          <br />
+          <br />
+          <img 
+            className="banner"
+            src="Banner.png" />
+          <br />
+          <br />
           <label>Search for a movie:  </label>
           <input
             type="text"
@@ -144,27 +153,36 @@ class RecommendTitles extends Component {
           />
           <br />
           <br />
-          <label>Select Movie To Recommend On!</label>
+          <label className={typeof foundTitles !== 'undefined' && foundTitles.length > 0 ? "nothidden" : "hidden"}>
+            Select movie to recommend on!
+          </label>
           <br />
           <br />
-          {titlesElems}
+          <div className="container">
+            {titlesElems}
+          </div>
           <br />
           <br />
-          <label>Recommend Movies</label>
-          <br />
-          <br />
-          <input
-            className={selectedTitleId === "" ? "hidden" : "nothidden"}
-            id="RecommendButton"
-            type="button"
-            value="Recommend"
-            onClick={this.recommendTitles}
-          />
-          <br />
-          <br />
-          {recommendationsElems}
-          <br />
-          <br />
+          <div className={selectedTitleId === "" ? "hidden" : "nothidden"}>
+            <input
+              id="RecommendButton"
+              type="button"
+              value="Find Movies For Me!"
+              onClick={this.recommendTitles}
+            />
+            <br />
+            <br />
+          </div>
+          <div className={typeof recommendedTitles !== 'undefined' && recommendedTitles.length > 0 ? "nothidden" : "hidden"}>
+            <label>Recommended Movies</label>
+            <br />
+            <br />
+            <div className="container">
+              {recommendationsElems}
+            </div>
+            <br />
+            <br />
+          </div>
           <br />
           <br />
       </div>
