@@ -39,12 +39,14 @@
 
 .App-Button-Default {
   background: lightgrey;
-  width: 100%
+  width: 100%;
+  max-width: 170px;
 }
 
 .App-Button-Active {
   background: yellowgreen;
-  width: 100%
+  width: 100%;
+  max-width: 170px;
 }
 
 .nothidden {

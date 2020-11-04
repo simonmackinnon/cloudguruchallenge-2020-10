@@ -96,12 +96,6 @@ Resources:
       Timeout: 900
       TracingConfig:
         Mode: Active
-      VpcConfig:
-        SecurityGroupIds:
-          - Fn::ImportValue: !Sub ${EnvironmentName}:NoIngressSecurityGroup
-        SubnetIds:
-          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet1
-          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet2
       Environment:
         Variables:
           LOGGER_LEVEL: INFO
@@ -199,12 +193,6 @@ Resources:
       Timeout: 240
       TracingConfig:
         Mode: Active
-      VpcConfig:
-        SecurityGroupIds:
-          - Fn::ImportValue: !Sub ${EnvironmentName}:NoIngressSecurityGroup
-        SubnetIds:
-          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet1
-          - Fn::ImportValue: !Sub ${EnvironmentName}:PrivateSubnet2
       Environment:
         Variables:
           LOGGER_LEVEL: INFO
