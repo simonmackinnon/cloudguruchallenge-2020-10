@@ -1,3 +1,5 @@
 cython
 numpy
 pandas
+bs4
+requests
