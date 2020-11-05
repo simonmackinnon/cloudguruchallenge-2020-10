@@ -13,7 +13,7 @@ class App extends Component {
   constructor(props){
     super(props);
 
-    ReactGA.initialize('dsafdsf');
+    ReactGA.initialize('G-GJ0RZ871V6');
     ReactGA.pageview(window.location.pathname);
     this.handler = this.handler.bind(this)
   }

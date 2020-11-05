@@ -44,7 +44,7 @@
 }
 
 .App-Button-Active {
-  background: yellowgreen;
+  background: #efe1308a;
   width: 100%;
   max-width: 170px;
 }
@@ -57,12 +57,20 @@
   visibility: hidden;
 }
 
-.container {
+.container3 {
   columns: 3 auto;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 60%;
+  max-width: 60%;
+}
+
+.container2 {
+  columns: 2 auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 60%;
 }
 
 .content {
@@ -75,4 +83,55 @@
 .banner {
   width: 70%;
   max-width: 450px;
+}
+
+table.paleBlueRows {
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #FFFFFF;
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  text-align: center;
+  border-collapse: collapse;
+}
+table.paleBlueRows td, table.paleBlueRows th {
+  border: 1px solid #FFFFFF;
+  padding: 3px 2px;
+}
+table.paleBlueRows tbody td {
+  font-size: 13px;
+}
+
+table.paleBlueRows tr {
+  line-height: 30px;
+}
+
+table.paleBlueRows tr:nth-child(even) {
+  background: #efe1308a;
+}
+table.paleBlueRows thead {
+  background: #8a8a8a;
+  border-bottom: 5px solid #FFFFFF;
+}
+table.paleBlueRows thead th {
+  font-size: 17px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #FFFFFF;
+}
+table.paleBlueRows thead th:first-child {
+  border-left: none;
+}
+
+table.paleBlueRows tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  background: #D0E4F5;
+  border-top: 3px solid #444444;
+}
+table.paleBlueRows tfoot td {
+  font-size: 14px;
 }

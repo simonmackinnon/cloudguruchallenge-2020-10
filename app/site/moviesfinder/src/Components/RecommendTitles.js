@@ -25,7 +25,7 @@ class RecommendTitles extends Component {
 
     let searchString = this.state.searchInput;
 
-    fetch('https://vn1aniwdlj.execute-api.ap-southeast-2.amazonaws.com/live?search='+searchString, {
+    fetch('https://wsf1w4y8hf.execute-api.ap-southeast-2.amazonaws.com/live?search='+searchString, {
       "headers": {},
       "referrer": "",
       "referrerPolicy": "no-referrer-when-downgrade",
@@ -66,7 +66,7 @@ class RecommendTitles extends Component {
 
     let reftitleid = this.state.selectedTitleId;
 
-    fetch('https://vn1aniwdlj.execute-api.ap-southeast-2.amazonaws.com/live?recommendfortitle='+reftitleid, {
+    fetch('https://wsf1w4y8hf.execute-api.ap-southeast-2.amazonaws.com/live?recommendfortitle='+reftitleid, {
       "headers": {},
       "referrer": "",
       "referrerPolicy": "no-referrer-when-downgrade",
@@ -121,9 +121,9 @@ class RecommendTitles extends Component {
          var title = element.title
          var url = "https://www.imdb.com/title/"+{titleId}.titleId
         return (
-          <div key={i}>
+          <tr key={i}>
             <a href={url}>{title}</a>
-          </div>
+          </tr>
         )
       }
     )
@@ -134,7 +134,8 @@ class RecommendTitles extends Component {
           <br />
           <img 
             className="banner"
-            src="Banner.png" />
+            src="Banner.png"
+            alt="Movies For Me Banner" />
           <br />
           <br />
           <label>Search for a movie:  </label>
@@ -158,7 +159,7 @@ class RecommendTitles extends Component {
           </label>
           <br />
           <br />
-          <div className="container">
+          <div className="container3">
             {titlesElems}
           </div>
           <br />
@@ -174,11 +175,16 @@ class RecommendTitles extends Component {
             <br />
           </div>
           <div className={typeof recommendedTitles !== 'undefined' && recommendedTitles.length > 0 ? "nothidden" : "hidden"}>
-            <label>Recommended Movies</label>
+            <label>Recommended Movies:</label>
             <br />
             <br />
-            <div className="container">
+            {/* <div className="container">
               {recommendationsElems}
+            </div> */}
+            <div className="container2">
+              <table className="paleBlueRows">
+                {recommendationsElems}
+              </table>
             </div>
             <br />
             <br />
