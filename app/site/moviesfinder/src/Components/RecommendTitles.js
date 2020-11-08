@@ -142,20 +142,13 @@ class RecommendTitles extends Component {
       <div id="recommend-titles">
           <br />
           <br />
-          <a href="/">
-            <img 
-              className="banner"
-              src="Banner.png"
-              alt="Movies For Me Banner" />
-          </a>
-          <br />
-          <br />
           <label>Search for a movie:  </label>
           <input
             type="text"
             id="search"
             name="search"
             placeholder="Type Title Here"
+            className="Search-Field"
             onChange={this.handleSearchChange}
             onKeyDown={this.keyPress}
           />
@@ -163,6 +156,7 @@ class RecommendTitles extends Component {
             id="SearchButton"
             type="button"
             value="Search"
+            className="Search-Button"
             onClick={this.searchTitles}
           />
           <br />
@@ -191,9 +185,6 @@ class RecommendTitles extends Component {
             <label>Recommended Movies:</label>
             <br />
             <br />
-            {/* <div className="container">
-              {recommendationsElems}
-            </div> */}
             <div className="container2">
               <table className="paleYellowRows">
                 {recommendationsElems}

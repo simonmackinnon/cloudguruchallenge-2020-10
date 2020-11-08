@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactGA from 'react-ga';
 import './App.css';
+import Header from './Components/Header';
 import RecommendTitles from './Components/RecommendTitles';
 import Footer from './Components/Footer';
 
@@ -23,6 +24,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="content">
+        <Header/>
         <RecommendTitles/>
         </div>
         <div className="footer">

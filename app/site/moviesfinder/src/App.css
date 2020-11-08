@@ -2,17 +2,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -47,6 +36,23 @@
   background: #efe1308a;
   width: 100%;
   max-width: 170px;
+}
+
+.Search-Button {
+  background: #efe1308a;
+  width: 100%;
+  max-width: 170px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 18px;
+}
+
+.Search-Field {
+  width: 100%;
+  max-width: 170px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 18px;
 }
 
 .nothidden {
@@ -138,6 +144,6 @@ table.paleYellowRows tfoot td {
   font-size: 14px;
 }
 
-a {
+table.paleYellowRows a {
   color: black;
 }
