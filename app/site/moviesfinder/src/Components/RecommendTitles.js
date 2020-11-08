@@ -142,10 +142,12 @@ class RecommendTitles extends Component {
       <div id="recommend-titles">
           <br />
           <br />
-          <img 
-            className="banner"
-            src="Banner.png"
-            alt="Movies For Me Banner" />
+          <a href="/">
+            <img 
+              className="banner"
+              src="Banner.png"
+              alt="Movies For Me Banner" />
+          </a>
           <br />
           <br />
           <label>Search for a movie:  </label>
