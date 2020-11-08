@@ -62,7 +62,8 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  max-width: 60%;
+  width: 90%;
+  max-width: 500px;
 }
 
 .container2 {
@@ -70,7 +71,8 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  max-width: 60%;
+  width: 90%;
+  max-width: 500px;
 }
 
 .content {
@@ -85,7 +87,7 @@
   max-width: 450px;
 }
 
-table.paleBlueRows {
+table.paleYellowRows {
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #FFFFFF;
@@ -95,43 +97,43 @@ table.paleBlueRows {
   text-align: center;
   border-collapse: collapse;
 }
-table.paleBlueRows td, table.paleBlueRows th {
+table.paleYellowRows td, table.paleYellowRows th {
   border: 1px solid #FFFFFF;
   padding: 3px 2px;
 }
-table.paleBlueRows tbody td {
+table.paleYellowRows tbody td {
   font-size: 13px;
 }
 
-table.paleBlueRows tr {
+table.paleYellowRows tr {
   line-height: 30px;
 }
 
-table.paleBlueRows tr:nth-child(even) {
+table.paleYellowRows tr:nth-child(even) {
   background: #efe1308a;
 }
-table.paleBlueRows thead {
+table.paleYellowRows thead {
   background: #8a8a8a;
   border-bottom: 5px solid #FFFFFF;
 }
-table.paleBlueRows thead th {
+table.paleYellowRows thead th {
   font-size: 17px;
   font-weight: bold;
   color: #FFFFFF;
   text-align: center;
   border-left: 2px solid #FFFFFF;
 }
-table.paleBlueRows thead th:first-child {
+table.paleYellowRows thead th:first-child {
   border-left: none;
 }
 
-table.paleBlueRows tfoot {
+table.paleYellowRows tfoot {
   font-size: 14px;
   font-weight: bold;
   color: #333333;
   background: #D0E4F5;
   border-top: 3px solid #444444;
 }
-table.paleBlueRows tfoot td {
+table.paleYellowRows tfoot td {
   font-size: 14px;
 }

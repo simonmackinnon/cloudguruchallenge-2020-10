@@ -17,7 +17,8 @@ class RecommendTitles extends Component {
       "searchTitles",
       "handleSearchChange",
       "handleTitleSelect",
-      "recommendTitles"
+      "recommendTitles",
+      "keyPress"
     );
   }
 
@@ -60,6 +61,13 @@ class RecommendTitles extends Component {
       selectedTitleId: e.target.id
     });
     console.log("selected: ", e.target.id)
+  }
+
+  keyPress(e){
+    if(e.keyCode === 13){
+        console.log('value', e.target.value);
+        this.searchTitles(e);
+    }
   }
 
   recommendTitles(e) {
@@ -108,6 +116,7 @@ class RecommendTitles extends Component {
               onClick={titleSelectHandler}
             />
             <br />
+            <br />
           </div>
         )
       }
@@ -119,10 +128,11 @@ class RecommendTitles extends Component {
 
          console.log("titleid: ", {titleId}.titleId)
          var title = element.title
+         var tooltip_text = element.title
          var url = "https://www.imdb.com/title/"+{titleId}.titleId
         return (
           <tr key={i}>
-            <a href={url}>{title}</a>
+            <a href={url} title={tooltip_text}>{title}</a>
           </tr>
         )
       }
@@ -145,6 +155,7 @@ class RecommendTitles extends Component {
             name="search"
             placeholder="Type Title Here"
             onChange={this.handleSearchChange}
+            onKeyDown={this.keyPress}
           />
           <input
             id="SearchButton"
@@ -182,7 +193,7 @@ class RecommendTitles extends Component {
               {recommendationsElems}
             </div> */}
             <div className="container2">
-              <table className="paleBlueRows">
+              <table className="paleYellowRows">
                 {recommendationsElems}
               </table>
             </div>
