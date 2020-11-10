@@ -67,6 +67,9 @@ def updateImagesUrls(df_titles, table_name, dynamodb_resource):
                     Key={
                         'titleid': {
                             'S': row['titleid'],
+                        },
+                        'label': {
+                            'N': row['label']
                         }
                     },
                     ReturnValues='ALL_NEW',
