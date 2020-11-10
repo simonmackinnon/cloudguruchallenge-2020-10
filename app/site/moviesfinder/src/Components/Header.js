@@ -5,8 +5,6 @@ class Header extends Component {
     render () {
         return (
             <div>
-                <br />
-                <br />
                 <a href="/">
                     <img 
                         className="banner"

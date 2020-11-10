@@ -132,7 +132,12 @@ class RecommendTitles extends Component {
          var url = "https://www.imdb.com/title/"+{titleId}.titleId
         return (
           <tr key={i}>
-            <a href={url} title={tooltip_text}>{title}</a>
+            <a href={url} 
+              title={tooltip_text}
+              target="_blank"
+              rel="noreferrer">
+              {title}
+            </a>
           </tr>
         )
       }
@@ -140,8 +145,6 @@ class RecommendTitles extends Component {
     
     return (
       <div id="recommend-titles">
-          <br />
-          <br />
           <label>Search for a movie:  </label>
           <input
             type="text"
@@ -160,7 +163,6 @@ class RecommendTitles extends Component {
             onClick={this.searchTitles}
           />
           <br />
-          <br />
           <label className={typeof foundTitles !== 'undefined' && foundTitles.length > 0 ? "nothidden" : "hidden"}>
             Select movie to recommend on!
           </label>
@@ -169,13 +171,12 @@ class RecommendTitles extends Component {
           <div className="container3">
             {titlesElems}
           </div>
-          <br />
-          <br />
           <div className={selectedTitleId === "" ? "hidden" : "nothidden"}>
             <input
               id="RecommendButton"
               type="button"
               value="Find Movies For Me!"
+              className="Search-Button"
               onClick={this.recommendTitles}
             />
             <br />
