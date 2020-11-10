@@ -50,7 +50,7 @@ def getImageUrlForTitle(reftitle, reftitleid):
         
 def updateImagesUrls(df_titles, table_name, dynamodb_resource):
     for index, row in df_titles.iterrows():
-        if (row['img_url'] != ""):
+        if (not 'img_url' in row) or (row['img_url'] != ""):
             img_url_for_title = getImageUrlForTitle(row['title'], row['titleid'])
             if img_url_for_title != "":
                 logger.info("updating img_url for {} to {}".format(index, img_url_for_title))
