@@ -238,6 +238,68 @@ Resources:
             - xray:PutTelemetryRecords
             Resource: '*'
 
+  ImageUrlLoaderFunction:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        S3Bucket:
+          Fn::ImportValue: !Sub ${EnvironmentName}:coreinf-functionbucket
+        S3Key: 'ImageUrlLoaderFunction.zip'
+      Description: 'Function to update image url for movies data table'
+      FunctionName: 'ImageUrlLoaderFunction'
+      Handler: 'image_url_scrape.event_handler'
+      MemorySize: 512
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt ImageUrlLoaderLambdaExecutionRole.Arn
+      Runtime: 'python3.6'
+      Timeout: 900
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          LOGGER_LEVEL: INFO
+          TABLE_NAME:  !Ref DDBTable
+  ImageUrlLoaderLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action:
+            - dynamodb:Scan
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+            Resource: !GetAtt DDBTable.Arn
+          - Effect: Allow
+            Action:
+            - ec2:DescribeNetworkInterfaces
+            - ec2:CreateNetworkInterface
+            - ec2:DeleteNetworkInterface
+            - ec2:DescribeInstances
+            - ec2:AttachNetworkInterface
+            Resource: '*'
+          - Effect: Allow
+            Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+            Resource: '*'
 
 
 Outputs:
@@ -256,6 +318,11 @@ Outputs:
     Value: !GetAtt MovieRecommendFunction.Arn
     Export: 
       Name: !Sub ${EnvironmentName}:MovieRecommendFunctionArn
+  ImageUrlLoaderFunction:
+    Description: Function to update image url for movies data table
+    Value: !Ref  ImageUrlLoaderFunction
+    Export: 
+      Name: !Sub ${EnvironmentName}:ImageUrlLoaderFunction
   DDBTable:
     Description: DynamoDB table with Movie data in it
     Value: !Ref DDBTable

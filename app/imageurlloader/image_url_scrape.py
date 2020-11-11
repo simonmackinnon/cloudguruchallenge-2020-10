@@ -50,32 +50,22 @@ def getImageUrlForTitle(reftitle, reftitleid):
         
 def updateImagesUrls(df_titles, table_name, dynamodb_resource):
     for index, row in df_titles.iterrows():
-        if (not 'img_url' in row) or (row['img_url'] != ""):
+        #logger.info("checking row {}".format(row))
+        if (not 'imageurl' in row) or (pd.isna(row['imageurl'])) or (pd.isnull(row['imageurl'])) or (row['imageurl'] == ""):
             img_url_for_title = getImageUrlForTitle(row['title'], row['titleid'])
             if img_url_for_title != "":
                 logger.info("updating img_url for {} to {}".format(index, img_url_for_title))
                 table = dynamodb_resource.Table(table_name)
                 response = table.update_item(
-                    ExpressionAttributeNames={
-                        '#IU': 'imageurl',
-                    },
-                    ExpressionAttributeValues={
-                        ':u': {
-                            'S': img_url_for_title,
-                        }
-                    },
                     Key={
-                        'titleid': {
-                            'S': row['titleid'],
-                        },
-                        'label': {
-                            'N': row['label']
-                        }
+                        'label': row['label'],
+                        'titleid': row['titleid']
                     },
-                    ReturnValues='ALL_NEW',
-                    UpdateExpression='SET #IU = :u',
+                    UpdateExpression='SET imageurl = :val1',
+                    ExpressionAttributeValues={
+                        ':val1': img_url_for_title
+                    }
                 )
-                logger.info("updated response {}".format(response))
 
 
 def main(args):
@@ -88,6 +78,7 @@ def main(args):
         logger.info('Starting...')
         response = getTableScanResponse(tableName, dynamodb_resource)
         df_titles = getTitles(response)
+        #logger.info('titles[0]: {}'.format(df_titles.iloc[0]))
         updateImagesUrls(df_titles, tableName, dynamodb_resource)
         logger.info('Done!')
     except:
