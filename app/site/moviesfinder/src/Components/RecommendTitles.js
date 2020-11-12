@@ -136,6 +136,12 @@ class RecommendTitles extends Component {
      let recommendationsElems = this.state.recommendedTitles.map(
        function(element, i){
          var titleId = element.titleid
+         let imageurl = element.imageurl;
+         //console.log("image url: ", imageurl);
+        
+        if (imageurl === null){
+          imageurl = "placeholder.png"
+        }
 
          console.log("titleid: ", {titleId}.titleId)
          var title = element.title
@@ -143,12 +149,26 @@ class RecommendTitles extends Component {
          var url = "https://www.imdb.com/title/"+{titleId}.titleId
         return (
           <tr key={i}>
-            <a href={url} 
-              title={tooltip_text}
-              target="_blank"
-              rel="noreferrer">
-              {title}
-            </a>
+            <td>
+              <a href={url} 
+                title={tooltip_text}
+                target="_blank"
+                rel="noreferrer">
+                <img 
+                  src={imageurl} 
+                  alt={title}
+                  className="table-image-thumbnail"
+                />
+              </a>
+            </td>
+            <td>
+              <a href={url} 
+                title={tooltip_text}
+                target="_blank"
+                rel="noreferrer">
+                {title}
+              </a>
+            </td>
           </tr>
         )
       }
