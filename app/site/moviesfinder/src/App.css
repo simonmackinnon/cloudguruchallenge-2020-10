@@ -27,7 +27,7 @@
 }
 
 .App-Button-Default {
-  background: lightgrey;
+  background: #ffffff;
   width: 100%;
   max-width: 170px;
 }
@@ -45,6 +45,10 @@
   padding: 10px;
   margin: 10px;
   font-size: 18px;
+}
+
+img:focus {
+  outline-width: 10px;
 }
 
 .Search-Field {
@@ -72,6 +76,15 @@
   max-width: 500px;
 }
 
+.container5 {
+  columns: 5 auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  max-width: 800px;
+}
+
 .container2 {
   columns: 2 auto;
   display: block;
@@ -92,6 +105,14 @@
   width: 70%;
   max-width: 450px;
   margin: 20px;
+}
+
+.title-label {
+  overflow:hidden;
+  width: 90%; 
+  display: inline-block;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 table.paleYellowRows {

@@ -58,7 +58,7 @@ class RecommendTitles extends Component {
 
   handleTitleSelect(e) {
     this.setState({
-      selectedTitleId: e.target.id
+      selectedTitleId: e.target.id,
     });
     console.log("selected: ", e.target.id)
   }
@@ -105,20 +105,31 @@ class RecommendTitles extends Component {
        function(element, i){
          var titleId = element.titleid
          var title = element.title
+         let imageurl = element.imageurl;
+         //console.log("image url: ", imageurl);
+        
+        if (imageurl === null){
+          imageurl = "placeholder.png"
+        }
+
         return (
-          <div key={i}>
+          <div 
+            key={i}
+            className={titleId === selectedTitleId ? "App-Button-Active" : "App-Button-Default"}>
+            <label className="title-label">{title}</label>
             <input 
               className={titleId === selectedTitleId ? "App-Button-Active" : "App-Button-Default"}
               id={titleId} 
-              type="button" 
+              type="image" 
+              src={imageurl} 
+              alt={title}
               value={title} 
               title={title}
               onClick={titleSelectHandler}
             />
             <br />
-            <br />
           </div>
-        )
+        );
       }
     )
 
@@ -168,7 +179,7 @@ class RecommendTitles extends Component {
           </label>
           <br />
           <br />
-          <div className="container3">
+          <div className="container5">
             {titlesElems}
           </div>
           <div className={selectedTitleId === "" ? "hidden" : "nothidden"}>
