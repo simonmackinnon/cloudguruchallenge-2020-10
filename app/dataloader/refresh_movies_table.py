@@ -16,6 +16,23 @@ def setupLogger(loggerLevel):
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=loggerLevel,
         datefmt='%d-%m-%Y %H:%M:%S')
+
+def tableIsEmpty(response):
+    return response['Count'] == 0
+
+def getTitles(response):
+    if not tableIsEmpty(response):
+        items = response['Items']
+        items.sort(key=lambda x: x['titleid'], reverse=True)
+        df_items = pd.DataFrame(items)
+        return df_items
+    
+    return pd.DataFrame()
+
+def getTableScanResponse(table_name, dynamodb_resource):
+    table = dynamodb_resource.Table(table_name)
+    response = table.scan()
+    return response
     
 def getMoviesFile(bucket_name):
     if not os.path.exists('/tmp/download'):
@@ -83,8 +100,42 @@ def loadDataIntoTable(df_titles, tableName):
             if e.response['Error']['Code'] != 'ConditionalCheckFailedException':
                 raise
 
+def updateDataInTable(df_titles, tableName):
+    
+    dynamodb_resource = boto3.resource('dynamodb', region_name='ap-southeast-2')
 
-def main(args):
+    table = dynamodb_resource.Table(tableName)
+
+    scan_titles = getTitles(getTableScanResponse(tableName, dynamodb_resource))
+    
+    for index, row, in df_titles.iterrows(): 
+        try:
+            row_titleid = row['title'].split(' ')[0]
+            row_title = " ".join(row['title'].split()[1:])
+            row_label = row['labels']
+
+            if not scan_titles[scan_titles['titleid'] == row_titleid].any():
+                logger.info("putting record {}".format(row['title']))
+                response = table.update_item(
+                    Key={
+                        'titleid': row_titleid,
+                        'label': row_label
+                    },
+                    UpdateExpression='SET titleid = :titleid, title = :title, label = :lable',
+                    ExpressionAttributeValues={
+                        ':titleid': row_titleid,
+                        ':title': row_title,
+                        ':label': row_label
+                    }
+                )
+        except ClientError as e:
+            # Ignore the ConditionalCheckFailedException, bubble up
+            # other exceptions.
+            if e.response['Error']['Code'] != 'ConditionalCheckFailedException':
+                raise
+
+
+def main(args, event, context):
     bucketName = args['bucketName']
     tableName = args['tableName']
     loggerLevel = logging.__dict__[args['loggerLevel']]
@@ -94,8 +145,11 @@ def main(args):
         logger.info('Starting...')
         filename = getMoviesFile(bucketName)
         df_titles = getMoviesDataFrame(filename)
-        truncateTable(tableName)
-        loadDataIntoTable(df_titles, tableName)
+        if event.body.refresh:
+            truncateTable(tableName)
+            loadDataIntoTable(df_titles, tableName)
+        else:
+            updateDataInTable(df_titles, tableName)
         logger.info('Done!')
     except:
         logger.exception('Error in processing!')
@@ -110,5 +164,5 @@ def event_handler(event, context):
     
     logger.info('Args: {}'.format(args))
     
-    main(args)      
+    main(args, event, context)      
 
